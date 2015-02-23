@@ -2,19 +2,22 @@
 var semver = require('semver');
 var git = require('gift')('.');
 
-module.exports = function bump(version, filename) {
+module.exports = function bump(version, noGit, filename) {
   if (!filename) filename = 'manifest.json';
   if (!version) return readManifest(filename).then(manifest => manifest.version || '0.0.0');
-  return checkGitStatus().then(useGit =>
-    readManifest(filename).then(manifest =>
+  if (noGit) return bumpManifest(false);
+  return checkGitStatus().then(bumpManifest);
+
+  function bumpManifest(useGit) {
+    return readManifest(filename).then(manifest =>
       bumpVersion(manifest.version, version).then(version => {
         manifest.version = version;
         var p = writeManifestToFile(filename, manifest);
         if (useGit) p = p.then(() => commitAndTagFile(filename, version))
         return p.then(() => version);
       })
-    )
-  );
+    );
+  }
 }
 
 function checkGitStatus() {
