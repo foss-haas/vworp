@@ -1,0 +1,20 @@
+{
+  "name": "foxx-version",
+  "version": "0.0.0",
+  "description": "`npm version` for ArangoDB Foxx apps.",
+  "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/foss-haas/foxx-version.git"
+  },
+  "author": "Alan Plum <me@pluma.io>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/foss-haas/foxx-version/issues"
+  },
+  "homepage": "https://github.com/foss-haas/foxx-version",
+  "dependencies": {
+    "gift": "^0.5.0",
+    "semver": "^4.3.0"
+  }
+}
