@@ -1,5 +1,6 @@
 'use strict';
 var Promise = require('es6-promise').Promise;
+var detectJsonIndent = require('detect-json-indent');
 var semver = require('semver');
 var git = require('gift')('.');
 var fs = require('fs');
@@ -8,19 +9,21 @@ module.exports = bump;
 
 function bump(version, noGit, filename) {
   if (!filename) filename = 'manifest.json';
-  if (!version) return readManifest(filename).then(manifest => manifest.version || '0.0.0');
+  if (!version) return readFile(filename).then(data => JSON.parse(data).version || '0.0.0');
   if (noGit) return bumpManifest(false);
   return checkGitStatus().then(bumpManifest);
 
   function bumpManifest(useGit) {
-    return readManifest(filename).then(manifest =>
-      bumpVersion(manifest.version, version).then(version => {
+    return readFile(filename).then(data => {
+      var indent = detectJsonIndent(data);
+      var manifest = JSON.parse(data);
+      return bumpVersion(manifest.version, version).then(version => {
         manifest.version = version;
-        var p = writeManifestToFile(filename, manifest);
+        var p = writeDataToFile(filename, JSON.stringify(manifest, null, indent));
         if (useGit) p = p.then(() => commitAndTagFile(filename, version));
         return p.then(() => version);
-      })
-    );
+      });
+    });
   }
 }
 
@@ -35,29 +38,29 @@ function checkGitStatus() {
   );
 }
 
-function readManifest(filename) {
+function readFile(filename) {
   return new Promise((resolve, reject) =>
     fs.readFile(filename, 'utf-8', (err, data) =>
       err ? reject(err) : resolve(data)
     )
-  ).then(data => JSON.parse(data));
+  );
 }
 
 function bumpVersion(version, bump) {
   return Promise.resolve(
     bump.match(/^((pre)?(major|minor|patch)|prerelease)$/)
-    ? semver.inc(version || '0.0.0', bump)
+    ? semver.parse(semver.inc(version || '0.0.0', bump))
     : semver.parse(bump)
-  ).then(new Promise((resolve, reject) => version
-    ? resolve(version)
+  ).then(ver => new Promise((resolve, reject) => ver
+    ? resolve(ver.version)
     : reject(new Error('Not a valid semver version: ' + bump))
   ));
 }
 
-function writeManifestToFile(filename, manifest) {
+function writeDataToFile(filename, data) {
   return new Promise((resolve, reject) =>
-    fs.writeFile(filename, manifest, err => err ? reject(err) :
-      resolve(manifest)
+    fs.writeFile(filename, data, err => err ? reject(err) :
+      resolve(data)
     )
   );
 }
