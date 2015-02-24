@@ -7,21 +7,22 @@ var fs = require('fs');
 
 module.exports = bump;
 
-function bump(version, noGit, filename) {
-  if (!filename) filename = 'manifest.json';
-  if (!version) return readFile(filename).then(data => JSON.parse(data).version || '0.0.0');
+function bump(version, noGit, filenames) {
+  if (!filenames) filenames = 'manifest.json';
+  filenames = Array.isArray(filenames) ? filenames : [filenames];
+  if (!version) return readFile(filenames[0]).then(parseJson).then(manifest => manifest.version || '0.0.0');
   if (noGit) return bumpManifest(false);
   return checkGitStatus().then(bumpManifest);
 
   function bumpManifest(useGit) {
-    return readFile(filename).then(data => {
-      var indent = detectJsonIndent(data);
-      var manifest = JSON.parse(data);
+    return readFile(filenames[0]).then(parseJson).then(manifest => {
       return bumpVersion(manifest.version, version).then(version => {
         if (manifest.version === version) return Promise.resolve(version);
         manifest.version = version;
-        var p = writeDataToFile(filename, JSON.stringify(manifest, null, indent));
-        if (useGit) p = p.then(() => commitAndTagFile(filename, version));
+        var p = Promise.all(filenames.map(
+          filename => updateManifestVersion(filename, version)
+        ));
+        if (useGit) p = p.then(() => commitAndTagFiles(filenames, version));
         return p.then(() => version);
       });
     });
@@ -41,14 +42,6 @@ function checkGitStatus() {
   );
 }
 
-function readFile(filename) {
-  return new Promise((resolve, reject) =>
-    fs.readFile(filename, 'utf-8', (err, data) =>
-      err ? reject(err) : resolve(data)
-    )
-  );
-}
-
 function bumpVersion(version, bump) {
   return Promise.resolve(
     bump.match(/^((pre)?(major|minor|patch)|prerelease)$/)
@@ -60,7 +53,27 @@ function bumpVersion(version, bump) {
   ));
 }
 
-function writeDataToFile(filename, data) {
+function updateManifestVersion(filename, version) {
+  console.log('bumping', filename, 'to', version);
+  return readFile(filename).then(inData => {
+    var indent = detectJsonIndent(inData);
+    return parseJson(inData).then(manifest => {
+      manifest.version = version;
+      var outData = JSON.stringify(manifest, null, indent);
+      return writeFile(filename, outData);
+    });
+  });
+}
+
+function readFile(filename) {
+  return new Promise((resolve, reject) =>
+    fs.readFile(filename, 'utf-8', (err, data) => err ? reject(err) :
+      resolve(data)
+    )
+  );
+}
+
+function writeFile(filename, data) {
   return new Promise((resolve, reject) =>
     fs.writeFile(filename, data, err => err ? reject(err) :
       resolve(data)
@@ -68,9 +81,13 @@ function writeDataToFile(filename, data) {
   );
 }
 
-function commitAndTagFile(filename, version) {
+function parseJson(data) {
+  return Promise.resolve(data).then(data => JSON.parse(data));
+}
+
+function commitAndTagFiles(filenames, version) {
   return new Promise((resolve, reject) =>
-    git.add(filename, err => err ? reject(err) :
+    git.add(filenames, err => err ? reject(err) :
       git.commit(version, err => err ? reject(err) :
         git.create_tag('v' + version, err => err ? reject(err) :
           resolve()

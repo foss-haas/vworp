@@ -1,10 +1,10 @@
 {
-  "name": "foxx-version",
+  "name": "vworp",
   "version": "0.0.0",
-  "description": "`npm version` for ArangoDB Foxx apps.",
+  "description": "'npm version' for timelords.",
   "main": "lib/index.js",
   "bin": {
-    "foxx-version": "lib/cli.js"
+    "vworp": "lib/cli.js"
   },
   "scripts": {
     "lint": "jshint src",
@@ -12,14 +12,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/foss-haas/foxx-version.git"
+    "url": "https://github.com/foss-haas/vworp.git"
   },
   "author": "Alan Plum <me@pluma.io>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/foss-haas/foxx-version/issues"
+    "url": "https://github.com/foss-haas/vworp/issues"
   },
-  "homepage": "https://github.com/foss-haas/foxx-version",
+  "homepage": "https://github.com/foss-haas/vworp",
   "dependencies": {
     "detect-json-indent": "0.0.0",
     "es6-promise": "^2.0.1",
