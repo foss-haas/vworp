@@ -12,7 +12,7 @@ Basically, it's a substitute for `npm version` that supports updating multiple f
 
 # CLI
 
-```sh
+```
 $ vworp --help
 
 Modify a project's version number.
