@@ -10,12 +10,15 @@ module.exports = bump;
 function bump(version, noGit, filenames) {
   if (!filenames) filenames = 'manifest.json';
   filenames = Array.isArray(filenames) ? filenames : [filenames];
-  if (!version) return readFile(filenames[0]).then(parseJson).then(manifest => 'v' + (manifest.version || '0.0.0'));
+  if (!version) {
+    return readFileToString(filenames[0]).then(parseJson)
+    .then(manifest => 'v' + (manifest.version || '0.0.0'));
+  }
   if (noGit) return bumpManifest(false);
   return checkGitStatus().then(bumpManifest);
 
   function bumpManifest(useGit) {
-    return readFile(filenames[0]).then(parseJson).then(manifest => {
+    return readFileToString(filenames[0]).then(parseJson).then(manifest => {
       return bumpVersion(manifest.version, version).then(version => {
         if (manifest.version === version) return Promise.resolve(version);
         manifest.version = version;
@@ -55,17 +58,17 @@ function bumpVersion(version, bump) {
 
 function updateManifestVersion(filename, version) {
   console.log('bumping', filename, 'to', version);
-  return readFile(filename).then(inData => {
+  return readFileToString(filename).then(inData => {
     var indent = detectJsonIndent(inData);
     return parseJson(inData).then(manifest => {
       manifest.version = version;
       var outData = JSON.stringify(manifest, null, indent);
-      return writeFile(filename, outData);
+      return writeStringToFile(filename, outData);
     });
   });
 }
 
-function readFile(filename) {
+function readFileToString(filename) {
   return new Promise((resolve, reject) =>
     fs.readFile(filename, 'utf-8', (err, data) => err ? reject(err) :
       resolve(data)
@@ -73,7 +76,7 @@ function readFile(filename) {
   );
 }
 
-function writeFile(filename, data) {
+function writeStringToFile(filename, data) {
   return new Promise((resolve, reject) =>
     fs.writeFile(filename, data, err => err ? reject(err) :
       resolve(data)
