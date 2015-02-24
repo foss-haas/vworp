@@ -10,7 +10,7 @@ module.exports = bump;
 function bump(version, noGit, filenames) {
   if (!filenames) filenames = 'manifest.json';
   filenames = Array.isArray(filenames) ? filenames : [filenames];
-  if (!version) return readFile(filenames[0]).then(parseJson).then(manifest => manifest.version || '0.0.0');
+  if (!version) return readFile(filenames[0]).then(parseJson).then(manifest => 'v' + (manifest.version || '0.0.0'));
   if (noGit) return bumpManifest(false);
   return checkGitStatus().then(bumpManifest);
 
@@ -23,7 +23,7 @@ function bump(version, noGit, filenames) {
           filename => updateManifestVersion(filename, version)
         ));
         if (useGit) p = p.then(() => commitAndTagFiles(filenames, version));
-        return p.then(() => version);
+        return p.then(() => 'v' + version);
       });
     });
   }
