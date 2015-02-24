@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Vworp by foss-haas</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Vworp</h1>
+        <h2>`npm version` for timelords.</h2>
+        <a href="https://github.com/foss-haas/vworp" class="button"><small>View project on</small> GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a id="synopsis" class="anchor" href="#synopsis" aria-hidden="true"><span class="octicon octicon-link"></span></a>Synopsis</h1>
+
+<p><strong>vworp</strong> is a tool for bumping the version number of projects and automagically creating git commits and tags for each version.</p>
+
+<p>Basically, it's a substitute for <code>npm version</code> that supports updating multiple files and can be used in projects that don't have a <code>package.json</code>.</p>
+
+<p><a href="http://foss-haas.mit-license.org"><img src="https://img.shields.io/npm/l/vworp.svg" alt="license - MIT"></a> <a href="https://david-dm.org/foss-haas/vworp"><img src="https://img.shields.io/david/foss-haas/vworp.svg" alt="Dependencies"></a></p>
+
+<p><a href="https://www.npmjs.com/package/vworp"><img src="https://nodei.co/npm/vworp.png?compact=true" alt="NPM status"></a></p>
+
+<p><a href="https://www.codacy.com/public/pluma/vworp"><img src="https://img.shields.io/codacy/f3bd7f31c1f9436fa747f04c4937aa52.svg" alt="Codacy rating"></a></p>
+
+<h1>
+<a id="cli" class="anchor" href="#cli" aria-hidden="true"><span class="octicon octicon-link"></span></a>CLI</h1>
+
+<div class="highlight highlight-sh"><pre>$ vworp --help
+
+Modify a project<span class="pl-s1"><span class="pl-pds">'</span>s version number.</span>
+<span class="pl-s1">Usage: fworp &lt;options&gt; [ &lt;newversion&gt; | major | minor | patch | prerelease |</span>
+<span class="pl-s1">  prepatch | preminor | premajor ]</span>
+<span class="pl-s1"></span>
+<span class="pl-s1">Options:</span>
+<span class="pl-s1">  --file, -f      Filename. This can be specified multiple times.</span>
+<span class="pl-s1">                                                       [default: "package.json"]</span>
+<span class="pl-s1">  --nogit, -n     Don<span class="pl-pds">'</span></span>t create a commit and tag <span class="pl-k">in</span> git.                         
+  --version       Show the version number of fworp.                      
+  --help, -h, -<span class="pl-k">?</span>  Show this <span class="pl-s3">help</span> information. </pre></div>
+
+<h1>
+<a id="api" class="anchor" href="#api" aria-hidden="true"><span class="octicon octicon-link"></span></a>API</h1>
+
+<div class="highlight highlight-js"><pre><span class="pl-s">var</span> vworp <span class="pl-k">=</span> <span class="pl-s3">require</span>(<span class="pl-s1"><span class="pl-pds">'</span>vworp<span class="pl-pds">'</span></span>);
+vworp(<span class="pl-s1"><span class="pl-pds">'</span>1.3.0<span class="pl-pds">'</span></span>, <span class="pl-c1">false</span>, [<span class="pl-s1"><span class="pl-pds">'</span>package.json<span class="pl-pds">'</span></span>, <span class="pl-s1"><span class="pl-pds">'</span>bower.json<span class="pl-pds">'</span></span>, <span class="pl-s1"><span class="pl-pds">'</span>component.json<span class="pl-pds">'</span></span>])
+.then(
+  version <span class="pl-k">=&gt;</span> <span class="pl-en">console</span><span class="pl-s3">.log</span>(<span class="pl-s1"><span class="pl-pds">'</span>New version:<span class="pl-pds">'</span></span>, version),
+  err <span class="pl-k">=&gt;</span> <span class="pl-en">console</span><span class="pl-s3">.error</span>(<span class="pl-s1"><span class="pl-pds">'</span>Error:<span class="pl-pds">'</span></span>, err.message)
+);</pre></div>
+
+<h2>
+<a id="vworpnewversion-nogit-filename" class="anchor" href="#vworpnewversion-nogit-filename" aria-hidden="true"><span class="octicon octicon-link"></span></a>vworp([newversion[, noGit[, filename]]])</h2>
+
+<p>Bumps/sets the version number of the file in <code>filename</code> (default: <code>"package.json"</code>) to <code>newversion</code>.</p>
+
+<p>If <code>noGit</code> is not set to <code>true</code>, modifying the version number will fail if the current git workspace is not empty and a new commit tagged with the version number (e.g. <code>v1.0.0</code>) will be created on success. If not in a git workspace, the option will have no effect.</p>
+
+<p>If <code>newversion</code> is not set, the version number will not be modified and the promise will resolve to the current version number of the file or <code>"0.0.0"</code> if the file does not contain a <code>version</code> property. Otherwise the promise will resolve to the new version number.</p>
+
+<p>If any errors occur, the promise will be rejected with that error.</p>
+
+<h1>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h1>
+
+<p>The MIT/Expat license. For more information, see <a href="http://foss-haas.mit-license.org/">http://foss-haas.mit-license.org/</a> or the accompanying <a href="https://github.com/foss-haas/vworp/blob/master/LICENSE">LICENSE</a> file.</p>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/foss-haas/vworp/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/foss-haas/vworp/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/foss-haas/vworp"></a> is maintained by <a href="https://github.com/foss-haas">foss-haas</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
