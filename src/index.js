@@ -18,6 +18,7 @@ function bump(version, noGit, filename) {
       var indent = detectJsonIndent(data);
       var manifest = JSON.parse(data);
       return bumpVersion(manifest.version, version).then(version => {
+        if (manifest.version === version) return Promise.resolve(version);
         manifest.version = version;
         var p = writeDataToFile(filename, JSON.stringify(manifest, null, indent));
         if (useGit) p = p.then(() => commitAndTagFile(filename, version));
@@ -30,8 +31,10 @@ function bump(version, noGit, filename) {
 function checkGitStatus() {
   return new Promise((resolve, reject) =>
     git.status((err, result) => {
-      if (err.code === 128) resolve(false);
-      else if (err) reject(err);
+      if (err) {
+        if (err.code === 128) resolve(false);
+        else reject(err);
+      }
       else if (result.clean) resolve(true);
       else reject(new Error('Aborted. Git workspace has uncommitted changes.'));
     })
