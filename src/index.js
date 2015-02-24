@@ -57,7 +57,6 @@ function bumpVersion(version, bump) {
 }
 
 function updateManifestVersion(filename, version) {
-  console.log('bumping', filename, 'to', version);
   return readFileToString(filename).then(inData => {
     var indent = detectJsonIndent(inData);
     return parseJson(inData).then(manifest => {
