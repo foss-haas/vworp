@@ -4,13 +4,20 @@
 
 Basically, it's a substitute for `npm version` that supports updating multiple files and can be used in projects that don't have a `package.json`.
 
+[![license - MIT](https://img.shields.io/npm/l/vworp.svg)](http://foss-haas.mit-license.org) [![Dependencies](https://img.shields.io/david/foss-haas/vworp.svg)](https://david-dm.org/foss-haas/vworp)
+
+[![NPM status](https://nodei.co/npm/vworp.png?compact=true)](https://www.npmjs.com/package/vworp)
+
+[![Codacy rating](https://img.shields.io/codacy/f3bd7f31c1f9436fa747f04c4937aa52.svg)](https://www.codacy.com/public/pluma/vworp)
+
 # CLI
 
 ```sh
 $ vworp --help
 
 Modify a project's version number.
-Usage: fworp <options> [ <newversion> | major | minor | patch | prerelease | prepatch | preminor | premajor ]
+Usage: fworp <options> [ <newversion> | major | minor | patch | prerelease |
+  prepatch | preminor | premajor ]
 
 Options:
   --file, -f      Filename. This can be specified multiple times.

@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 'use strict';
-var Promise = require('es6-promise');
 var pkg = require('../package');
 var name = Object.keys(pkg.bin)[0];
 
@@ -21,7 +20,6 @@ var argv = require('yargs')
   .alias('help', ['h', '?'])
   .argv;
 
-console.log(argv); throw 'banana';
 require('./')(argv._.join(' '), argv.nogit, argv.file)
 .then(
   version => console.log(version),
