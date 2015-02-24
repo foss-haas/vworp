@@ -1,8 +1,12 @@
 'use strict';
+var Promise = require('es6-promise').Promise;
 var semver = require('semver');
 var git = require('gift')('.');
+var fs = require('fs');
 
-module.exports = function bump(version, noGit, filename) {
+module.exports = bump;
+
+function bump(version, noGit, filename) {
   if (!filename) filename = 'manifest.json';
   if (!version) return readManifest(filename).then(manifest => manifest.version || '0.0.0');
   if (noGit) return bumpManifest(false);
@@ -13,7 +17,7 @@ module.exports = function bump(version, noGit, filename) {
       bumpVersion(manifest.version, version).then(version => {
         manifest.version = version;
         var p = writeManifestToFile(filename, manifest);
-        if (useGit) p = p.then(() => commitAndTagFile(filename, version))
+        if (useGit) p = p.then(() => commitAndTagFile(filename, version));
         return p.then(() => version);
       })
     );

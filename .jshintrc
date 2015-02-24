@@ -1,0 +1,8 @@
+{
+  "-W014": true,
+  "esnext": true,
+  "node": true,
+  "globals": {
+    "Promise": true
+  }
+}

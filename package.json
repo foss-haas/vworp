@@ -3,6 +3,13 @@
   "version": "0.0.0",
   "description": "`npm version` for ArangoDB Foxx apps.",
   "main": "lib/index.js",
+  "bin": {
+    "foxx-version": "lib/cli.js"
+  },
+  "scripts": {
+    "lint": "jshint src",
+    "dist": "babel src --out-dir lib"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/foss-haas/foxx-version.git"
@@ -14,7 +21,13 @@
   },
   "homepage": "https://github.com/foss-haas/foxx-version",
   "dependencies": {
+    "es6-promise": "^2.0.1",
     "gift": "^0.5.0",
-    "semver": "^4.3.0"
+    "semver": "^4.3.0",
+    "yargs": "^3.3.1"
+  },
+  "devDependencies": {
+    "babel": "^4.4.5",
+    "jshint": "^2.6.0"
   }
 }
