@@ -24,12 +24,12 @@
   "dependencies": {
     "detect-json-indent": "0.0.0",
     "es6-promise": "^2.0.1",
-    "gift": "^0.5.0",
+    "gift": "^0.6.0",
     "semver": "^4.3.0",
     "yargs": "^3.3.1"
   },
   "devDependencies": {
-    "babel": "^4.4.5",
+    "babel": "^5.1.0",
     "jshint": "^2.6.0"
   }
 }
